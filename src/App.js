@@ -7,18 +7,24 @@ import SignUp from './pages/SignUp';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import CounselorDashboard from './pages/CounselorDashboard';
+import BookSession from './pages/BookSession';
+import SetAvailability from './pages/SetAvailability';
+import ViewCounselors from './pages/ViewCounselors';
 import Footer from './components/Footer';
-import ProtectedRoute from './components/ProtectedRoute'; // Import the ProtectedRoute component
-import RoleBasedRoute from './components/RoleBasedRoute'; // Import the RoleBasedRoute component
+import ProtectedRoute from './components/ProtectedRoute';
+import RoleBasedRoute from './components/RoleBasedRoute';
 
 function App() {
   return (
     <Router>
       <Navbar />
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
+
+        {/* Protected Routes */}
         <Route
           path="/dashboard"
           element={
@@ -35,6 +41,36 @@ function App() {
             <ProtectedRoute>
               <RoleBasedRoute allowedRoles={['counselor']}>
                 <CounselorDashboard />
+              </RoleBasedRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/book-session/:counselorId"
+          element={
+            <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['client']}>
+                <BookSession />
+              </RoleBasedRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/set-availability"
+          element={
+            <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['counselor']}>
+                <SetAvailability />
+              </RoleBasedRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/view-counselors"
+          element={
+            <ProtectedRoute>
+              <RoleBasedRoute allowedRoles={['client']}>
+                <ViewCounselors />
               </RoleBasedRoute>
             </ProtectedRoute>
           }

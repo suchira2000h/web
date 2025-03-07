@@ -1,12 +1,15 @@
 const express = require('express');
 const Session = require('../../models/Session');
 const User = require('../../models/User');
-const router = express.Router();
 const auth = require('../../middleware/auth');
+const router = express.Router();
 
-// Book a session
+// @route   POST /api/sessions
+// @desc    Book a session
+// @access  Private
 router.post('/', auth, async (req, res) => {
   const { counselorId, date } = req.body;
+
   try {
     const client = await User.findById(req.user.id);
     const counselor = await User.findById(counselorId);
@@ -28,10 +31,20 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Get all sessions for a counselor
+// @route   GET /api/sessions
+// @desc    Get all sessions for the logged-in user
+// @access  Private
 router.get('/', auth, async (req, res) => {
   try {
-    const sessions = await Session.find({ counselor: req.user.id }).populate('client', 'name');
+    const user = await User.findById(req.user.id);
+    let sessions;
+
+    if (user.role === 'client') {
+      sessions = await Session.find({ client: user.id }).populate('counselor', 'name email');
+    } else if (user.role === 'counselor') {
+      sessions = await Session.find({ counselor: user.id }).populate('client', 'name email');
+    }
+
     res.json(sessions);
   } catch (err) {
     res.status(500).json({ error: err.message });
